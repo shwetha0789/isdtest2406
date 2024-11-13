@@ -1,0 +1,44 @@
+apiVersion: v1
+clusters:
+  - cluster:
+      insecure-skip-tls-verify: true
+      server: >-
+        https://vcp-10625766-870a-47b0-9a7f-8fd0641f39f9.cloud-1706880254.spot.rackspace.com/
+    name: qa-orangebox
+contexts:
+  - context:
+      cluster: qa-orangebox
+      namespace: default
+      user: ngpc-user
+    name: opsmx-qa-orangebox
+  - context:
+      cluster: qa-orangebox
+      namespace: default
+      user: oidc
+    name: opsmx-qa-orangebox-oidc
+current-context: opsmx-qa-orangebox
+kind: Config
+preferences: {}
+users:
+  - name: ngpc-user
+    user:
+      token: >-
+        eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNYQ25nd1NFS0JWQl9DbWxvalo0eCJ9.eyJncm91cCI6ImNsb3Vkc3BhY2UtYWRtaW4iLCJuaWNrbmFtZSI6ImNsb3VkYWRtaW5zIiwibmFtZSI6ImNsb3VkYWRtaW5zQG9wc214LmlvIiwicGljdHVyZSI6Imh0dHBzOi8vcy5ncmF2YXRhci5jb20vYXZhdGFyLzM2NWU0MDEyMDcwYTFjNGIyZThhZmIwNjdjOTI5ZTAwP3M9NDgwJnI9cGcmZD1odHRwcyUzQSUyRiUyRmNkbi5hdXRoMC5jb20lMkZhdmF0YXJzJTJGY2wucG5nIiwidXBkYXRlZF9hdCI6IjIwMjQtMTEtMTNUMDk6NTk6NDcuNjg5WiIsImVtYWlsIjoiY2xvdWRhZG1pbnNAb3BzbXguaW8iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6Ly9sb2dpbi5zcG90LnJhY2tzcGFjZS5jb20vIiwiYXVkIjoibXdHM2xVTVY4S3llTXFIZTRmSjVCYjNuTTF2QnZSTmEiLCJpYXQiOjE3MzE0OTIwMTAsImV4cCI6MTczMTc1MTIxMCwic3ViIjoiYXV0aDB8NjVjMzYzYzE1MzIxOWJhZTUyMjJiMjljIiwic2lkIjoic1dEMW5WTzdUc09ScWNtY0FlOWNqN2ZDU2U5YWNXTkMiLCJub25jZSI6IldURk1WRU5HVGtsbFMxaEpUMXBwU0Vvd1ZVcFJiMlpqY21OR1lpMTVabFppZGxGUk5VRjZOakE0VkE9PSIsIm9yZ19pZCI6Im9yZ19jVnRneVVpTjFpbzFEdjRIIn0.XGMUw0Pu4tSwDDHKKjM1aennIGJRKA9UHBV_jRxsre5-BLIkw0Bd8LILUrFNQ2aAAP6KGv8LmAePgx1cvNHDf9YA3Il86sZzU2cr6sQW8UQi2EOoxbnsZtYm5SWyczuMP5wN4PKQ-laZN2xt6S-CouQFtpaG9CeRxUDrDz0Fkyf8wMpNzmPRmtjNR4wunuL8EHh7bUkznAeakZOng2tOg93b0V2K1-steAvbmH1zY7Aoq2U_u_wszUZYLYnYRRPG0zOv8h59ISNhqdDOGeJTYsu5iEK04GWnFnpO-GYV_LZbEEcL1LZs8jyZoB4DbkXElHo4o_EuVa40k-abTtqCPA
+  - name: oidc
+    user:
+      exec:
+        apiVersion: client.authentication.k8s.io/v1beta1
+        args:
+          - oidc-login
+          - get-token
+          - '--oidc-issuer-url=https://login.spot.rackspace.com/'
+          - '--oidc-client-id=mwG3lUMV8KyeMqHe4fJ5Bb3nM1vBvRNa'
+          - '--oidc-extra-scope=openid'
+          - '--oidc-extra-scope=profile'
+          - '--oidc-extra-scope=email'
+          - '--oidc-auth-request-extra-params=organization=org_cVtgyUiN1io1Dv4H'
+          - '--token-cache-dir=~/.kube/cache/oidc-login/org_cVtgyUiN1io1Dv4H'
+        command: kubectl
+        env: null
+        interactiveMode: IfAvailable
+        provideClusterInfo: false
