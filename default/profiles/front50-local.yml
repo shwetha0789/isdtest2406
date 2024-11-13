@@ -1,0 +1,7 @@
+spinnaker:
+  s3:
+    versioning: false
+migrations:
+  migrateToManagedServiceAccounts: false
+pipeline:
+  rbac: false

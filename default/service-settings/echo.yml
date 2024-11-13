@@ -1,0 +1,6 @@
+artifactId: quay.io/opsmxpublic/ubi8-echo-cve:1.33.3-abafec6-202408200836
+env:
+  JAVA_OPTS: "-XX:MaxRAMPercentage=100.0"
+kubernetes:
+  podAnnotations:
+    moniker.spinnaker.io/application: spin

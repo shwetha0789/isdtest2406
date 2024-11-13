@@ -1,0 +1,211 @@
+#####################################################
+global:
+  # Set to true if user need to access Spinnaker seperately
+  spinnakerUrl: false
+  ## URL that will be used to access ISD. MUST BE CHANGED
+  ## Ensure that this URL is reachable from your browser. Either DNS name server record must exist or "hosts" file must be updated
+  oesUI:
+    protocol: https # Set to https if global.certManager and global.ssl is true
+    host: isdtest2406.qabox.opsmx.org # Replace the ISD URL
+
+  spinDeck:
+    protocol: http # Set to https if global.certManager and global.ssl is true
+    host: SPINNAKER.REPLACE.THIS.WITH.YOURCOMPANY.COM   # Replace the Spinnaker URL
+
+  # Set to true if you are using the saml/Okta for Spinnaker
+  auth:
+    saml: false
+
+  ssl:
+    enabled: true # Set to true if using "httpS" urls. TLS certificates must be generated for the above URL
+
+  certManager:
+    installed: true # Set to true if you have cert-manager installed in the cluster, the URL must be accessible from the internet
+
+  ## nginx ingress objects are created if set to true. Set to false if using LoadBalancer or any other ingress
+  ## The cluster MUST have nginx ingress controller already installed
+  createIngress: true
+   ## The cluster MUST have nginx ingress controller already installed
+  createIngress: true
+    #Prometheus URL configuration; url overwhich Prometheus will be accessed
+  prometheus:
+    enabled: true
+    protocol: https
+    host: prometheus.isdtest2406.qabox.opsmx.org
+    ingress:
+      annotations:
+        kubernetes.io/ingress.class: nginx
+      tls: 
+        secretName: prometheus-ingress
+
+############################################
+  openTelemetry: true #Set this to true for displaying metrics data in grafana
+#################################################
+
+  #Only for trial purposes, pod-baesd git is installed and automatically configured
+  gitea:
+    enabled: false # Set to true for trial-install only
+
+  ###############################################################################
+  # A trial LDAP is installed by default, with users: admin, user1,2,3 with user1password, user2pa...
+  # Set it to false if own LDAP is to be configured
+  installOpenLdap: true
+
+  ## ldap configuration used in oes-gate, oes-platform and spinnaker gate for authentication and authorization
+  ldap:
+    managerPassword: encrypted:ldappassword:ldappassword
+    enabled: true # Set to false if you are using the saml/Okta for ISD
+
+   ## Valid admin details for ISD authorization
+  saporgate:
+    config:
+      username: admin       #Name of the valid user in your service provider
+      adminGroups: admin    #Name of the valid admin group in your service provider
+      password: encrypted:saporpassword:saporpassword  #password for the saporgate
+      
+
+# encryption key for spinnaker accounts
+  sapor:
+    config:
+      encrypt:
+        enabled: false  
+        key: Q7udUkHPuA3VnNlOtksSgQ
+
+  minio:
+    accessKey: encrypted:miniopassword:miniopassword
+    secretKey: encrypted:miniopassword:miniopassword
+
+####################################################
+spinnaker:
+  autoInstallSampleApps: true   # Set this to FALSE if upgrading
+  gitopsHalyard: # A repo with appropriate contents used for configuring Spinnaker
+    repo:
+      type: git # git, s3, stash(bitbucket server) use a different sample values file for s3/bitbuck-stash
+      ## Git repo details, https://<baseUrlHostName>/<organization>/<repository>
+      organization: shwetha0789
+      repository: isdtest2406 # repo name for GitOps Halyard, will be created if "githubcreationHook" is set to true
+      username: shwetha0789  # Username to authenticate with git/stash repo
+      dynamicAccRepository: isdtest2406 # Repo name of the GitOps Dynamic Accounts Directory, Can be same as "repository"
+
+      ########################################################################################
+      ## Additional git-repo parameters, typically no need to be change
+      ########################################################################################
+
+      configArgs: "http.sslVerify=false"  # Extra arguments to the git clone command
+      ## Configure below fields only if repo type is git/stash.
+      baseUrlHostName: github.com    # Change only if using enterprise git or another repo-type
+      projectName: ""                # Specify project name only if repo is under a project
+      halConfigBranch: main        # Branch for the "repository", recommend to keep "main"
+      halConfigPath: /               #relative path from repository root folder
+      dynAccntConfigPath: /          #relative path from repository root folder
+      token: encrypted:gittoken:gittoken  # Token corresponding to spinnaker.gitopsHalyard.repo.username
+
+  ########################################################################################
+  # Lines below this do not need to be changed except where external SSO and DBs are used
+  ########################################################################################
+  
+  ## Here basic ldap auth is used by default; everything under spinCli will be pasted in ~/.spin/config
+  spinCli:
+    auth:
+      basic:
+        username: admin          # Use credentials corresponding to saporgate.config.username
+        password: encrypted:saporpassword:saporpassword     # Use credentials corresponding to saporgate.config.password
+
+####################################################
+gate:
+  config:
+    #####################################################
+    # SAML AUthentication
+    #####################################################
+    # openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out cert.pem
+    # kubectl create secret generic samlcerts --from-file key.pem --from-file cert.pem -n namespace
+    spring:
+      security:
+        saml2:
+          enabled: false
+          registration-id: SSO #change this to the application name in OKTA
+          relyingparty:
+            registration:
+              SSO:   #change this to the application name in OKTA
+                entity-id: saml-opsmx #change this to the Okta SP entity id
+                acs:
+                  location: https://<isd.opsmx.net>/saml/SSO  #Update ISD URL here
+                assertingparty:
+                  metadata-uri: https://dev.okta.com/app/exkf6qovkumombT5p5d7/sso/saml/metadata  #Update metadata URL here 
+                decryption: 
+                  credentials:
+                    - private-key-location: file:/opt/saml/certs/key.pem  
+                      certificate-location: file:/opt/saml/certs/cert.pem
+                  singlesignon.sign-request: true
+          user-attribute-mapping:
+            firstName: firstName
+            lastName: lastName
+            roles:
+              attributeName: memberOf  # Update attributeName here
+              sortRoles: true
+              forceLowercaseRoles: true
+              rolesDelimiter: ","
+            email: email
+          signatureDigest: SHA256
+          userSource: gate
+#######################################################################################
+# Lines below this do not need to be changed except where external Redis and DBs is used
+########################################################################################
+redis:
+  url: redis://:encrypted:redispassword:redispassword@{{ .Release.Name }}-redis-master
+  password: encrypted:redispassword:redispassword
+#####################################################
+db:
+  url: jdbc:postgresql://oes-db:5432
+  username: postgres
+  password: encrypted:dbpassword:dbpassword
+########################################################################################
+# Do not change the below parameter leave it as it is
+########################################################################################
+############################### DB Migration configuration################################################
+dbmigration:
+  enable: false  ### By default it's set to FALSE; if you are upgrading the ISD from 4.0.3.1 or 4.0.4, we need to set this flag to 'true'
+  versionFrom: 4.0.3.1 ## We need to update this version if we want to run migration from other ISD versions. For eg: versionFrom: 4.0.3.1
+########################################################################################
+rabbitmq:
+  username: rabbitmq
+  password: encrypted:rabbitmqpassword:rabbitmqpassword
+#####################################################
+# OpenLDAP custom configuration; will override default configuration of openldap helm chart
+openldap:
+  adminPassword: encrypted:ldappassword:ldappassword
+  configPassword: encrypted:ldapconfigpassword:ldapconfigpassword
+####################################################
+####################################################
+# Centralized Monitoring Configuration
+enableCentralMonitoring: true
+
+####################################
+grafana:
+  adminUser: admin
+  adminPassword: opsmxadmin123
+  grafana.ini:
+    server:
+      domain: isdtest2406.qabox.opsmx.org
+      root_url: https://isdtest2406.qabox.opsmx.org/grafana
+      serve_from_sub_path: true
+    security:
+      allow_embedding: true
+  username: nonadminuser   #Non-admin username for Grafana UI access
+  password: opsmxpassword123  #Non-admin password for Grafana UI acess
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+  ## Below is the block of code for Ingress
+  grafana:
+    enabled: true
+    protocol: https
+    host: grafana.isdtest2406.qabox.opsmx.org
+
+    ingress:
+      annotations:
+        kubernetes.io/ingress.class: nginx
+      tls:
+        secretName: grafana-ingress
