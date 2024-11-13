@@ -1,0 +1,14 @@
+---
+# Source: oes/charts/prometheus/templates/alertmanager/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    component: "alertmanager"
+    app: prometheus
+    release: isd
+    chart: prometheus-11.16.2
+    heritage: Helm
+  name: isd-prometheus-alertmanager
+rules:
+  []

@@ -1,0 +1,27 @@
+---
+# Source: oes/charts/prometheus/templates/node-exporter/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+  labels:
+    component: "node-exporter"
+    app: prometheus
+    release: isd
+    chart: prometheus-11.16.2
+    heritage: Helm
+  name: isd-prometheus-node-exporter
+  namespace: isdtest2406
+spec:
+  clusterIP: None
+  ports:
+    - name: metrics
+      port: 9100
+      protocol: TCP
+      targetPort: 9100
+  selector:
+    component: "node-exporter"
+    app: prometheus
+    release: isd
+  type: "ClusterIP"

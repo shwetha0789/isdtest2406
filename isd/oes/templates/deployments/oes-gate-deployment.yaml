@@ -1,0 +1,74 @@
+---
+# Source: oes/templates/deployments/oes-gate-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    moniker.spinnaker.io/application: isd
+  labels:
+    app: oes
+    component: gate
+    heritage: "Helm"
+    release: "isd"
+    chart: "oes-4.0.52"
+  name: oes-gate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oes
+      component: gate
+  template:
+    metadata:
+      annotations:
+        checksum/secret: f97ef16678d2ed15965305e5bfe613859b5d34a2a37d53b24690ac00e5a1c61f
+        moniker.spinnaker.io/application: isd
+        prometheus.io/scrape: "false"
+        prometheus_io_path: /mgmt/prometheus
+        prometheus_io_port: "8084"
+      labels:
+        app: oes
+        component: gate
+        heritage: "Helm"
+        release: "isd"
+        chart: "oes-4.0.52"
+    spec:
+      containers:
+      - image: quay.io/opsmxpublic/ubi8-gate:isd-spin-2024.06.00-202408190706
+        name: oes-gate
+        env:
+        - name: spring_profiles_active
+          value: vault,local
+        ports:
+        - containerPort: 8084
+          protocol: TCP
+        resources:
+            {}
+        volumeMounts:
+        - name: gate-volume
+          mountPath: /opt/spinnaker/config/gate.yml
+          subPath: gate.yml
+        - mountPath: /opt/spinnaker/config/bootstrap.yml
+          name: bootstrap-volume
+          subPath: bootstrap.yml
+        readinessProbe:
+          tcpSocket:
+            port: 8084
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8084
+          initialDelaySeconds: 60
+          periodSeconds: 60
+      volumes:
+      - name: gate-volume
+        secret:
+          secretName: oes-gate-config
+      - secret:
+          items:
+          - key: bootstrap.yml
+            path: bootstrap.yml
+          secretName: bootstrap
+        name: bootstrap-volume

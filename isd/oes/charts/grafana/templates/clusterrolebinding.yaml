@@ -1,0 +1,20 @@
+---
+# Source: oes/charts/grafana/templates/clusterrolebinding.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: isd-grafana-clusterrolebinding
+  labels:
+    helm.sh/chart: grafana-7.0.19
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: isd
+    app.kubernetes.io/version: "10.2.2"
+    app.kubernetes.io/managed-by: Helm
+subjects:
+  - kind: ServiceAccount
+    name: isd-grafana
+    namespace: isdtest2406
+roleRef:
+  kind: ClusterRole
+  name: isd-grafana-clusterrole
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,25 @@
+---
+# Source: oes/charts/prometheus/templates/server/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: "server"
+    app: prometheus
+    release: isd
+    chart: prometheus-11.16.2
+    heritage: Helm
+  name: isd-prometheus-server
+  namespace: isdtest2406
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 9090
+  selector:
+    component: "server"
+    app: prometheus
+    release: isd
+  sessionAffinity: None
+  type: "ClusterIP"

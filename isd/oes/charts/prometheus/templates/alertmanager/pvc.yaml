@@ -1,0 +1,19 @@
+---
+# Source: oes/charts/prometheus/templates/alertmanager/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    component: "alertmanager"
+    app: prometheus
+    release: isd
+    chart: prometheus-11.16.2
+    heritage: Helm
+  name: isd-prometheus-alertmanager
+  namespace: isdtest2406
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: "2Gi"

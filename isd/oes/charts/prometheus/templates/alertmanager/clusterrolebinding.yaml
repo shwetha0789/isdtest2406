@@ -1,0 +1,20 @@
+---
+# Source: oes/charts/prometheus/templates/alertmanager/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    component: "alertmanager"
+    app: prometheus
+    release: isd
+    chart: prometheus-11.16.2
+    heritage: Helm
+  name: isd-prometheus-alertmanager
+subjects:
+  - kind: ServiceAccount
+    name: isd-prometheus-alertmanager
+    namespace: isdtest2406
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: isd-prometheus-alertmanager
