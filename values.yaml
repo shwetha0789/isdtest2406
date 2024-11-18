@@ -31,7 +31,7 @@ global:
   prometheus:
     enabled: true
     protocol: https
-    host: prometheus.isdtest2406.qabox.opsmx.org
+    host: prometheus.isdtest2406.new.qabox.opsmx.org
     ingress:
       annotations:
         kubernetes.io/ingress.class: nginx
