@@ -202,7 +202,7 @@ grafana:
   grafana:
     enabled: true
     protocol: https
-    host: grafana.isdtest2406.qabox.opsmx.org
+    host: grafana.isdtest2406.new.qabox.opsmx.org
 
     ingress:
       annotations:
