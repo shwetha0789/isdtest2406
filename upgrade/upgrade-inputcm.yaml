@@ -2,7 +2,7 @@ apiVersion: v1
 data:
   url: github.com/shwetha0789/isdtest2406 ## e.g github.com/ksrinimba/gitops-repo, url without the leading "https://", the "git-repo" in the documentation
   username: shwetha0789
-  gitemail: teja.ambati@opsmx.io
+  gitemail: swetha.modepalli@opsmx.io
 
   #####################################################################################################
   # Typically, there is no need to change the values below this line, please check the "nameaspace"
