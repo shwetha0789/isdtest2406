@@ -1,7 +1,7 @@
 apiVersion: v1
 data:
-  url: github.com/shwetha0789/isdtest2406 ## e.g github.com/ksrinimba/gitops-repo, url without the leading "https://", the "git-repo" in the documentation
-  username: isdtest2406
+  url: github.com/tejaambati25/isdtest2406 ## e.g github.com/ksrinimba/gitops-repo, url without the leading "https://", the "git-repo" in the documentation
+  username: tejaambati25
   gitemail: teja.ambati@opsmx.io
 
   #####################################################################################################
